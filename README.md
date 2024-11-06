@@ -61,7 +61,7 @@ Install it with these two command lines:
 
 ```shell
 composer require cnerstudio/puphpeteer
-npm install github:cnerstudio/puphpeteer
+npm install @cnerstudio/puphpeteer
 ```
 
 ## Notable differences between PuPHPeteer and Puppeteer

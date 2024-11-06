@@ -20,7 +20,7 @@
     ],
     "require": {
         "php": ">=7.3",
-        "cnerstudio/rialto": "2.4.0",
+        "cnerstudio/rialto": "2.4.1",
         "psr/log": "^1.0",
         "vierbergenlars/php-semver": "^3.0.2"
     },
