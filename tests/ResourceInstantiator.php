@@ -8,9 +8,10 @@ class ResourceInstantiator
 {
     protected $resources = [];
 
-    public function __construct(array $browserOptions, string $url) {
-        $this->browserOptions = $browserOptions;
-        $this->url = $url;
+    public function __construct(
+        public array $browserOptions,
+        public string $url
+     ) {
 
         $this->resources = [
             'Accessibility' => function ($puppeteer) {
@@ -21,9 +22,6 @@ class ResourceInstantiator
             },
             'BrowserContext' => function ($puppeteer) {
                 return $this->Browser($puppeteer)->createIncognitoBrowserContext();
-            },
-            'BrowserFetcher' => function ($puppeteer) {
-                return $puppeteer->createBrowserFetcher();
             },
             'CDPSession' => function ($puppeteer) {
                 return $this->Target($puppeteer)->createCDPSession();

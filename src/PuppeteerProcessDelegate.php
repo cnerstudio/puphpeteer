@@ -2,20 +2,27 @@
 
 namespace Nesk\Puphpeteer;
 
-use Nesk\Rialto\Traits\UsesBasicResourceAsDefault;
 use Nesk\Rialto\Interfaces\ShouldHandleProcessDelegation;
+use Nesk\Rialto\Traits\UsesBasicResourceAsDefault;
 
 class PuppeteerProcessDelegate implements ShouldHandleProcessDelegation
 {
     use UsesBasicResourceAsDefault;
 
-    /**
-     * {@inheritDoc}
-     */
     public function resourceFromOriginalClassName(string $className): ?string
     {
         $class = "Nesk\\Puphpeteer\\Resources\\$className";
 
-        return class_exists($class) ? $class : null;
+        if (class_exists($class)) {
+            return $class;
+        }
+
+        $classWithoutCDP = 'Nesk\\Puphpeteer\\Resources\\'.preg_replace('/^CDP/', '', $className);
+
+        if (class_exists($classWithoutCDP)) {
+            return $classWithoutCDP;
+        }
+
+        return null;
     }
 }
