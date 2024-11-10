@@ -82,8 +82,11 @@ class PuppeteerConnectionDelegate extends ConnectionDelegate {
     return (
       !nonObjectValues.includes(value) &&
       !nonObjectValues.includes(value.constructor) &&
-      (value.constructor.name === className ||
-        value.constructor.name === "CDP" + className)
+      (
+          value.constructor.name === className
+          || value.constructor.name === "Cdp" + className
+          || value.constructor.name === "CDP" + className
+      )
     );
   }
 

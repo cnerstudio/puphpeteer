@@ -2,6 +2,6 @@
 
 namespace Nesk\Puphpeteer\Resources;
 
-class CDPSessionImpl extends CDPSession
+class DevToolsTarget extends Target
 {
 }

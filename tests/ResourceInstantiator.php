@@ -2,8 +2,19 @@
 
 namespace Nesk\Puphpeteer\Tests;
 
+use Nesk\Puphpeteer\Puppeteer;
+use Nesk\Puphpeteer\Resources\Browser;
+use Nesk\Puphpeteer\Resources\Frame;
+use Nesk\Puphpeteer\Resources\HTTPResponse;
+use Nesk\Puphpeteer\Resources\Page;
 use Nesk\Rialto\Data\JsFunction;
 
+/**
+ * @method Page Page(Puppeteer $puppeteer)
+ * @method Browser Browser(Puppeteer $puppeteer)
+ * @method Frame Frame(Puppeteer $puppeteer)
+ * @method HTTPResponse HttpResponse(Puppeteer $puppeteer)
+ */
 class ResourceInstantiator
 {
     protected $resources = [];
@@ -14,16 +25,16 @@ class ResourceInstantiator
      ) {
 
         $this->resources = [
-            'Accessibility' => function ($puppeteer) {
+            'Accessibility' => function (Puppeteer $puppeteer) {
                 return $this->Page($puppeteer)->accessibility;
             },
-            'Browser' => function ($puppeteer) {
+            'Browser' => function (Puppeteer $puppeteer): Browser {
                 return $puppeteer->launch($this->browserOptions);
             },
-            'BrowserContext' => function ($puppeteer) {
-                return $this->Browser($puppeteer)->createIncognitoBrowserContext();
+            'BrowserContext' => function (Puppeteer $puppeteer) {
+                return $this->Browser($puppeteer)->createBrowserContext();
             },
-            'CDPSession' => function ($puppeteer) {
+            'CDPSession' => function (Puppeteer $puppeteer) {
                 return $this->Target($puppeteer)->createCDPSession();
             },
             'ConsoleMessage' => function () {
@@ -38,54 +49,51 @@ class ResourceInstantiator
             'ElementHandle' => function ($puppeteer) {
                 return $this->Page($puppeteer)->querySelector('body');
             },
-            'EventEmitter' => function ($puppeteer) {
+            'EventEmitter' => function (Puppeteer $puppeteer) {
                 return $puppeteer->launch($this->browserOptions);
-            },
-            'ExecutionContext' => function ($puppeteer) {
-                return $this->Frame($puppeteer)->executionContext();
             },
             'FileChooser' => function () {
                 return new UntestableResource;
             },
-            'Frame' => function ($puppeteer) {
+            'Frame' => function (Puppeteer $puppeteer) {
                 return $this->Page($puppeteer)->mainFrame();
             },
-            'HTTPRequest' => function ($puppeteer) {
+            'HTTPRequest' => function (Puppeteer $puppeteer) {
                 return $this->HTTPResponse($puppeteer)->request();
             },
-            'HTTPResponse' => function ($puppeteer) {
+            'HTTPResponse' => function (Puppeteer $puppeteer): HTTPResponse {
                 return $this->Page($puppeteer)->goto($this->url);
             },
-            'JSHandle' => function ($puppeteer) {
+            'JSHandle' => function (Puppeteer $puppeteer) {
                 return $this->Page($puppeteer)->evaluateHandle(JsFunction::createWithBody('window'));
             },
-            'Keyboard' => function ($puppeteer) {
+            'Keyboard' => function (Puppeteer $puppeteer) {
                 return $this->Page($puppeteer)->keyboard;
             },
-            'Mouse' => function ($puppeteer) {
+            'Mouse' => function (Puppeteer $puppeteer) {
                 return $this->Page($puppeteer)->mouse;
             },
-            'Page' => function ($puppeteer) {
+            'Page' => function (Puppeteer $puppeteer): Page  {
                 return $this->Browser($puppeteer)->newPage();
             },
-            'SecurityDetails' => function ($puppeteer) {
+            'SecurityDetails' => function (Puppeteer $puppeteer) {
                 return new RiskyResource(function () use ($puppeteer) {
                     return $this->Page($puppeteer)->goto('https://example.com')->securityDetails();
                 });
             },
-            'Target' => function ($puppeteer) {
+            'Target' => function (Puppeteer $puppeteer) {
                 return $this->Page($puppeteer)->target();
             },
             'TimeoutError' => function () {
                 return new UntestableResource;
             },
-            'Touchscreen' => function ($puppeteer) {
+            'Touchscreen' => function (Puppeteer $puppeteer) {
                 return $this->Page($puppeteer)->touchscreen;
             },
-            'Tracing' => function ($puppeteer) {
+            'Tracing' => function (Puppeteer $puppeteer) {
                 return $this->Page($puppeteer)->tracing;
             },
-            'WebWorker' => function ($puppeteer) {
+            'WebWorker' => function (Puppeteer $puppeteer) {
                 $page = $this->Page($puppeteer);
                 $page->goto($this->url, ['waitUntil' => 'networkidle0']);
                 return $page->workers()[0];

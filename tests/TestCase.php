@@ -4,22 +4,28 @@ namespace Nesk\Puphpeteer\Tests;
 
 use Nesk\Puphpeteer\Puppeteer;
 use Monolog\Logger;
+use Nesk\Puphpeteer\Resources\Browser;
 use ReflectionClass;
 use Psr\Log\LogLevel;
 use Symfony\Component\Process\Process;
 use PHPUnit\Framework\Constraint\Callback;
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use PHPUnit\Framework\MockObject\Matcher\Invocation;
 
 class TestCase extends BaseTestCase
 {
     private $dontPopulateProperties = [];
+    protected string $host;
+    protected array $browserOptions;
+    protected string $url;
+    protected string $serverDir;
+    protected Process $servingProcess;
+    protected Browser $browser;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $methodName = explode(' ', $this->getName())[0] ?? '';
+        $methodName = explode(' ', $this->name())[0] ?? '';
         $testMethod = new \ReflectionMethod($this, $methodName);
         $docComment = $testMethod->getDocComment();
 
@@ -70,7 +76,7 @@ class TestCase extends BaseTestCase
          */
         $this->browserOptions = [
             'args' => ['--no-sandbox', '--disable-setuid-sandbox'],
-            'headless' => 'new',
+            'headless' => true,
         ];
 
         if ($this->canPopulateProperty('browser')) {

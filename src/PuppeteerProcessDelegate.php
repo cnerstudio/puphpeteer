@@ -11,13 +11,13 @@ class PuppeteerProcessDelegate implements ShouldHandleProcessDelegation
 
     public function resourceFromOriginalClassName(string $className): ?string
     {
-        $class = "Nesk\\Puphpeteer\\Resources\\$className";
+        $class = "Nesk\\Puphpeteer\\Resources\\{$className}";
 
         if (class_exists($class)) {
             return $class;
         }
 
-        $classWithoutCDP = 'Nesk\\Puphpeteer\\Resources\\'.preg_replace('/^CDP/', '', $className);
+        $classWithoutCDP = 'Nesk\\Puphpeteer\\Resources\\'. preg_replace('/^Cdp/i', '', $className);
 
         if (class_exists($classWithoutCDP)) {
             return $classWithoutCDP;

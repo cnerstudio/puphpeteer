@@ -5,21 +5,18 @@ namespace Nesk\Puphpeteer\Resources;
 use Nesk\Rialto\Data\BasicResource;
 
 /**
+ * @property \Nesk\Puphpeteer\Resources\TimeoutSettings $timeoutSettings
+ * @property-read \Nesk\Puphpeteer\Resources\CDPSession $client
+ * @method \Nesk\Puphpeteer\Resources\Realm mainRealm()
+ * @method-extended \Nesk\Puphpeteer\Resources\Realm mainRealm()
  * @method string url()
- *
  * @method-extended string url()
- *
- * @method \Nesk\Puphpeteer\Resources\ExecutionContext executionContext()
- *
- * @method-extended \Nesk\Puphpeteer\Resources\ExecutionContext executionContext()
- *
- * @method mixed evaluate(\Nesk\Rialto\Data\JsFunction|string $pageFunction, mixed ...$args)
- *
- * @method-extended mixed evaluate(callable|\Nesk\Rialto\Data\JsFunction|string $pageFunction, mixed ...$args)
- *
- * @method \Nesk\Puphpeteer\Resources\JSHandle evaluateHandle(\Nesk\Rialto\Data\JsFunction|string $pageFunction, int|float|string|bool|array|\Nesk\Puphpeteer\Resources\JSHandle|null ...$args)
- *
- * @method-extended \Nesk\Puphpeteer\Resources\JSHandle evaluateHandle(\Nesk\Rialto\Data\JsFunction|callable|string $pageFunction, int|float|string|bool|null|array|\Nesk\Puphpeteer\Resources\JSHandle ...$args)
+ * @method mixed evaluate(mixed|string $func, mixed ...$args)
+ * @method-extended mixed evaluate(mixed|string $func, mixed ...$args)
+ * @method mixed evaluateHandle(mixed|string $func, mixed ...$args)
+ * @method-extended mixed evaluateHandle(mixed|string $func, mixed ...$args)
+ * @method void close()
+ * @method-extended void close()
  */
 class WebWorker extends BasicResource
 {

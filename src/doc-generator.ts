@@ -17,7 +17,7 @@ type TypeContext = 'methodReturn'
 
 class TypeNotSupportedError extends Error {
     constructor(message?: string) {
-        super(message || 'This type is currently not supported.');
+        super('This type is currently not supported: ' + message);
     }
 }
 
@@ -162,12 +162,12 @@ class PhpDocumentationFormatter implements DocumentationFormatter {
 
     formatProperty(name: string, type: string, context: MemberContext): string {
         return context === 'class'
-            ? `${type} ${name}`
-            : `${name}: ${type}`;
+            ? `${type} \$${name}`
+            : `\$${name}: ${type}`;
     }
 
     formatGetter(name: string, type: string): string {
-        return `${type} ${name}`;
+        return `${type} \$${name}`;
     }
 
     formatAnonymousFunction(parameters: string, returnType: string): string {
@@ -179,6 +179,9 @@ class PhpDocumentationFormatter implements DocumentationFormatter {
     }
 
     formatParameter(name: string, type: string, isVariadic: boolean, isOptional: boolean): string {
+        if (name === 'this') {
+            name = 'selector'
+        }
         if (isVariadic && type.endsWith('[]')) {
             type = type.slice(0, -2);
         }
@@ -514,6 +517,9 @@ class DocumentationGenerator {
     }
 
     private getTypeNodeAsString(node: ts.TypeNode, context?: TypeContext): string {
+        if (!node) {
+            return '';
+        }
         if (node.kind === ts.SyntaxKind.AnyKeyword) {
             return this.formatter.formatTypeAny();
         } else if (node.kind === ts.SyntaxKind.UnknownKeyword) {
@@ -549,7 +555,8 @@ class DocumentationGenerator {
         } else if (ts.isParenthesizedTypeNode(node)) {
             return this.getEmptyFunctionSignatureAsString(node);
         } else {
-            throw new TypeNotSupportedError();
+            console.error('Unknown type: ' + ts.SyntaxKind[node.kind])
+            return this.formatter.formatTypeAny();
         }
     }
 
@@ -625,7 +632,8 @@ class DocumentationGenerator {
 
     private getNamedDeclarationAsString(node: ts.NamedDeclaration): string {
         if (!ts.isIdentifier(node.name) && !ts.isPrivateIdentifier(node.name)) {
-            throw new TypeNotSupportedError();
+            console.warn('Unknown type: ' + ts.SyntaxKind[node.kind]);
+            return '#';
         }
         return this.getIdentifierAsString(node.name);
     }

@@ -5,37 +5,18 @@ namespace Nesk\Puphpeteer\Resources;
 use Nesk\Rialto\Data\BasicResource;
 
 /**
- * @method \Nesk\Puphpeteer\Resources\EventEmitter on(mixed $event, mixed $handler)
- *
- * @method-extended \Nesk\Puphpeteer\Resources\EventEmitter on(mixed $event, mixed $handler)
- *
- * @method \Nesk\Puphpeteer\Resources\EventEmitter off(mixed $event, mixed $handler)
- *
- * @method-extended \Nesk\Puphpeteer\Resources\EventEmitter off(mixed $event, mixed $handler)
- *
- * @method \Nesk\Puphpeteer\Resources\EventEmitter removeListener(mixed $event, mixed $handler)
- *
- * @method-extended \Nesk\Puphpeteer\Resources\EventEmitter removeListener(mixed $event, mixed $handler)
- *
- * @method \Nesk\Puphpeteer\Resources\EventEmitter addListener(mixed $event, mixed $handler)
- *
- * @method-extended \Nesk\Puphpeteer\Resources\EventEmitter addListener(mixed $event, mixed $handler)
- *
- * @method bool emit(mixed $event, mixed $eventData = null)
- *
- * @method-extended bool emit(mixed $event, mixed $eventData = null)
- *
- * @method \Nesk\Puphpeteer\Resources\EventEmitter once(mixed $event, mixed $handler)
- *
- * @method-extended \Nesk\Puphpeteer\Resources\EventEmitter once(mixed $event, mixed $handler)
- *
- * @method float listenerCount(mixed $event)
- *
- * @method-extended float listenerCount(mixed $event)
- *
- * @method \Nesk\Puphpeteer\Resources\EventEmitter removeAllListeners(mixed $event = null)
- *
- * @method-extended \Nesk\Puphpeteer\Resources\EventEmitter removeAllListeners(mixed $event = null)
+ * @method mixed on(mixed $type, mixed $handler)
+ * @method-extended mixed on(mixed $type, mixed $handler)
+ * @method mixed off(mixed $type, mixed $handler = null)
+ * @method-extended mixed off(mixed $type, mixed $handler = null)
+ * @method bool emit(mixed $type, mixed $event)
+ * @method-extended bool emit(mixed $type, mixed $event)
+ * @method mixed once(mixed $type, mixed $handler)
+ * @method-extended mixed once(mixed $type, mixed $handler)
+ * @method float listenerCount(mixed $type)
+ * @method-extended float listenerCount(mixed $type)
+ * @method mixed removeAllListeners(mixed $type = null)
+ * @method-extended mixed removeAllListeners(mixed $type = null)
  */
 class EventEmitter extends BasicResource
 {

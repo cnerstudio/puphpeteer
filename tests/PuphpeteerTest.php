@@ -3,10 +3,11 @@
 namespace Nesk\Puphpeteer\Tests;
 
 use Nesk\Puphpeteer\Puppeteer;
+use Nesk\Puphpeteer\Resources\Frame;
+use Nesk\Puphpeteer\Resources\Page;
 use Nesk\Rialto\Data\JsFunction;
 use PHPUnit\Framework\ExpectationFailedException;
 use Nesk\Puphpeteer\Resources\ElementHandle;
-use Nesk\Rialto\Data\BasicResource;
 use Psr\Log\LoggerInterface;
 
 class PuphpeteerTest extends TestCase
@@ -39,17 +40,17 @@ class PuphpeteerTest extends TestCase
 
         $page->goto($this->url);
 
-        $select = function($resource) {
+        $select = function(Page | Frame | ElementHandle $resource) {
             $elements = [
                 $resource->querySelector('h1'),
                 $resource->querySelectorAll('h1')[0],
-                $resource->querySelectorXPath('/html/body/h1')[0],
+                $resource->querySelectorAll('::-p-xpath(/html/body/h1)')[0],
             ];
 
             $this->assertContainsOnlyInstancesOf(ElementHandle::class, $elements);
         };
 
-        $evaluate = function($resource) {
+        $evaluate = function(Page | Frame | ElementHandle $resource) {
             $strings = [
                 $resource->querySelectorEval('h1', JsFunction::createWithBody('return "Hello World!";')),
                 $resource->querySelectorAllEval('h1', JsFunction::createWithBody('return "Hello World!";')),
@@ -127,7 +128,7 @@ class PuphpeteerTest extends TestCase
                 }
             }
         } else {
-            $this->assertInstanceOf("Nesk\\Puphpeteer\\Resources\\$name", $resource);
+            $this->assertInstanceOf("\\Nesk\\Puphpeteer\\Resources\\$name", $resource, json_encode($resource));
         }
 
         if (!$incompleteTest) return;
@@ -149,7 +150,7 @@ class PuphpeteerTest extends TestCase
         $this->markTestIncomplete($reason);
     }
 
-    public function resourceProvider(): \Generator
+    public static function resourceProvider(): \Generator
     {
         $resourceNames = (new ResourceInstantiator([], ''))->getResourceNames();
 

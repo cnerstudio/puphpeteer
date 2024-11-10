@@ -28,7 +28,10 @@ final class GenerateDocumentationCommand extends Command
 
     private const DOC_FORMATS = [self::DOC_FORMAT_PHP, self::DOC_FORMAT_PHPSTAN];
 
-    protected static $defaultName = 'doc:generate';
+    public function getName(): ?string
+    {
+        return 'doc:generate';
+    }
 
     protected function configure(): void
     {
@@ -37,7 +40,7 @@ final class GenerateDocumentationCommand extends Command
             null,
             InputOption::VALUE_OPTIONAL,
             'The path where Puppeteer is installed.',
-            self::NODE_MODULES_DIR.'/puppeteer'
+            self::NODE_MODULES_DIR.'/puppeteer-core'
         );
     }
 
@@ -63,21 +66,21 @@ final class GenerateDocumentationCommand extends Command
     {
         self::buildDocumentationGenerator();
 
-        $commonFiles = \Safe\glob("$puppeteerPath/lib/esm/puppeteer/common/*.d.ts");
-        $nodeFiles = \Safe\glob("$puppeteerPath/lib/esm/puppeteer/node/*.d.ts");
+        $files = \Safe\glob($puppeteerPath . '/lib/esm/puppeteer/{common,node,api,cdp}/*.d.ts', GLOB_BRACE);
 
         $result = [];
         foreach (self::DOC_FORMATS as $format) {
             $process = new Process(
                 array_merge(
                     ['node', self::BUILD_DIR.'/'.self::DOC_FILE_NAME.'.js', $format],
-                    $commonFiles,
-                    $nodeFiles,
+                    $files,
                     ['--resources-namespace', self::RESOURCES_NAMESPACE, '--resources'],
                     $resourceNames
                 )
             );
             $process->mustRun();
+
+            echo $process->getErrorOutput().\PHP_EOL;
 
             foreach (\Safe\json_decode($process->getOutput(), true) as &$class) {
                 $result[$class['name']]['name'] = $class['name'];
@@ -102,27 +105,27 @@ final class GenerateDocumentationCommand extends Command
     private static function generatePhpDocWithDocumentation(array $classDocumentation): ?string
     {
         $properties = array_map(function (string $property): string {
-            return "\n * @property $property";
+            return "\n * @property {$property}";
         }, $classDocumentation[self::DOC_FORMAT_PHP]['properties']);
         $properties = implode('', $properties);
 
         $getters = array_map(function (string $getter): string {
-            return "\n * @property-read $getter";
+            return "\n * @property-read {$getter}";
         }, $classDocumentation[self::DOC_FORMAT_PHP]['getters']);
         $getters = implode('', $getters);
 
         $methods = '';
         foreach ($classDocumentation[self::DOC_FORMAT_PHP]['methods'] as $pos => $method) {
-            $methods .= "\n * @method $method";
+            $methods .= "\n * @method {$method}";
 
             $phpStanMethod = $classDocumentation[self::DOC_FORMAT_PHPSTAN]['methods'][$pos];
             // phpStorm works incorrectly if @phpstan-method is used.
             // Using non-standard method-extended phpDoc:
-            $methods .= "\n * @method-extended $phpStanMethod";
+            $methods .= "\n * @method-extended {$phpStanMethod}";
         }
 
         if ('' !== $properties || '' !== $getters || '' !== $methods) {
-            return "/**$properties$getters$methods\n */";
+            return "/**{$properties}{$getters}{$methods}\n */";
         }
 
         return null;
@@ -184,7 +187,8 @@ final class GenerateDocumentationCommand extends Command
 
         // Handle the specific Puppeteer class
         $classDocumentation = array_replace_recursive($documentation['Puppeteer'], $documentation['PuppeteerNode']);
-        unset($documentation['Puppeteer'], $documentation['PuppeteerNode']);
+        unset($documentation['Puppeteer'], $documentation['PuppeteerNode'], $resourceNames[array_search('Puppeteer', $resourceNames, true)]);
+
         if (null !== $classDocumentation) {
             $phpDoc = self::generatePhpDocWithDocumentation($classDocumentation);
             if (null !== $phpDoc) {
@@ -194,12 +198,12 @@ final class GenerateDocumentationCommand extends Command
 
         $missingResources = array_diff(array_keys($documentation), $resourceNames);
         foreach ($missingResources as $resource) {
-            $io->warning("The $resource class in Puppeteer doesn't have any equivalent in PuPHPeteer.");
+            $io->warning("The {$resource} class in Puppeteer doesn't have any equivalent in PuPHPeteer.");
         }
 
         $inexistantResources = array_diff($resourceNames, array_keys($documentation));
         foreach ($inexistantResources as $resource) {
-            $io->error("The $resource resource doesn't have any equivalent in Puppeteer.");
+            $io->error("The {$resource} resource doesn't have any equivalent in Puppeteer.");
         }
 
         return 0;
@@ -213,7 +217,7 @@ final class GenerateDocumentationCommand extends Command
         }
         $files = array_diff($files, ['.', '..']);
         foreach ($files as $file) {
-            (is_dir("$dir/$file")) ? self::rmdirRecursive("$dir/$file") : unlink("$dir/$file");
+            (is_dir("{$dir}/{$file}")) ? self::rmdirRecursive("{$dir}/{$file}") : unlink("{$dir}/{$file}");
         }
 
         return rmdir($dir);
