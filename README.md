@@ -6,7 +6,6 @@
 [![Composer Version](https://img.shields.io/packagist/v/cnerstudio/puphpeteer.svg?style=flat-square&label=Composer)](https://packagist.org/packages/cnerstudio/puphpeteer)
 [![Node Version](https://img.shields.io/node/v/@cnerstudio/puphpeteer.svg?style=flat-square&label=Node)](https://nodejs.org/)
 [![NPM Version](https://img.shields.io/npm/v/@cnerstudio/puphpeteer.svg?style=flat-square&label=NPM)](https://www.npmjs.com/package/@nesk/puphpeteer)
-[![Build Status](https://img.shields.io/travis/cnerstudio/puphpeteer.svg?style=flat-square&label=Build%20Status)](https://travis-ci.org/nesk/puphpeteer)
 
 A [Puppeteer](https://github.com/GoogleChrome/puppeteer/) bridge for PHP, supporting the entire API. Based on [Rialto](https://github.com/cnerstudio/rialto/), a package to manage Node resources from PHP.
 
@@ -64,6 +63,31 @@ composer require cnerstudio/puphpeteer
 npm install @cnerstudio/puphpeteer
 ```
 
+## Use with browserless
+
+```shell
+docker run --rm  -p 3000:3000 ghcr.io/browserless/chrome
+```
+
+```php
+$puppeteer = new Nesk\Puphpeteer\Puppeteer;
+
+$options = [
+    'headless' => false,
+    'stealth'=> true,
+    'timeout'=> 5000,
+    'args' => [
+        '--window-size=1366,768',
+    ],
+];
+
+$browser = $puppeteer->connect(['browserWSEndpoint' => 'ws://127.0.0.1:3000/chrome?launch='.urlencode(json_encode($options, JSON_UNESCAPED_UNICODE))]);
+$page = $browser->newPage();
+$page->goto('https://www.example.com');
+$page->screenshot(['path' => 'example.png']);
+$browser->close();
+```
+
 ## Notable differences between PuPHPeteer and Puppeteer
 
 ### Puppeteer's class must be instantiated
@@ -117,7 +141,6 @@ The following methods have been aliased because PHP doesn't support the `$` char
 
 - `$` => `querySelector`
 - `$$` => `querySelectorAll`
-- `$x` => `querySelectorXPath`
 - `$eval` => `querySelectorEval`
 - `$$eval` => `querySelectorAllEval`
 
@@ -125,6 +148,10 @@ Use these aliases just like you would have used the original methods:
 
 ```php
 $divs = $page->querySelectorAll('div');
+// Runs the `//h2` as the XPath expression.
+$xpath = $page->querySelectorAll('::-p-xpath(//h2)');
+// div element that has Checkout as the inner text.
+$text = $page->querySelector('div ::-p-text(Checkout)');
 ```
 
 ### Evaluated functions must be created with `JsFunction`
@@ -158,12 +185,9 @@ Instead, a `Node\Exception` will be thrown, the Node process will stay alive and
 
 ### Puppeteer plugins
 
-To use puppeteer-extra plugins add them to your project:
-```shell
-npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth
-```
+Puppeteer-extra and puppeteer-extra-plugin-stealth plugins already added in npm requirements.
 
-Then override js inclusion with js_extra option
+To use them, override js inclusion with js_extra option
 ```php
     $puppeteer = new Puppeteer([
         'js_extra' => /** @lang JavaScript */ "
@@ -174,8 +198,6 @@ Then override js inclusion with js_extra option
         "
     ]);
 ```
-
-
 
 ## License
 

@@ -8,6 +8,7 @@ $puppeteer = new Puppeteer;
 $browser = $puppeteer->launch();
 
 $page = $browser->newPage();
+$page->setViewport(['width' => 1366, 'height' => 768]);
 $page->goto('https://example.com');
 $page->screenshot(['path' => 'example.png']);
 
