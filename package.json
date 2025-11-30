@@ -1,6 +1,6 @@
 {
   "name": "@cnerstudio/puphpeteer",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "A Puppeteer bridge for PHP, supporting the entire API.",
   "keywords": [
     "php",
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@cnerstudio/rialto": "^2.6.5",
-    "puppeteer": "24.10.2",
+    "puppeteer": "24.22.3",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2"
   },
